@@ -13,15 +13,15 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/login', function (Request $request) {
-    $user = User::where('email', $request->email)->first();
+    $user = User::where('mc_name', $request->mc_name)->first();
     if (!$user || !\Hash::check($request->password, $user->password)) {
-        return make_response(null, 'Invalid credentials', false);
+        return make_response(null, 'Invalid credentials', 401, false);
     }
     return make_response(['token' => $user->createToken('api-token')->plainTextToken], 'Login successful');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    Route::post('/logout', function (Request $request) {
         $request->user()->currentAccessToken()->delete();
         return make_response(null, 'Token revoked');
     });
