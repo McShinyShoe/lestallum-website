@@ -1,5 +1,7 @@
-# NextJs + Laravel Docker Template
-Too lazy to set up a stack for laravel and next.js in docker? Just copy this project and you have a working laravel stack.
+# Lestallum Website
+This repository is a source code for lestallum.shinyshoe.net. Lestallum is a town in TheCavern Minecraft Server created my McShinyShoe(me). Feel free to fork this repository for your own town. This repository used [Next.js](https://nextjs.org) as frontend, [Laravel](https://laravel.com/) as a backend, and [Docker](https://www.docker.com/) to host it together.
+
+---
 
 By default Laravel folder is located at the folder `api`, and next.js folder is at `web`, but you can change it by changing this line in `.env`
 ``` bash
