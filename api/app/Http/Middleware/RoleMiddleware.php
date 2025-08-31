@@ -18,11 +18,11 @@ class RoleMiddleware
         $user = $request->user();
 
         if (! $user) {
-            return make_response(null, "Not logged in", false);
+            return make_response(null, "Not logged in.", Response::HTTP_UNAUTHORIZED, false, null);
         }
 
         if (! $user->hasAnyRole($roles)) {
-            return make_response(null, "Invalid role", false);
+            return make_response(null, "Invalid role.", Response::HTTP_FORBIDDEN, false, null);
         }
 
         return $next($request);
