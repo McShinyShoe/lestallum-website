@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Rename columns in users table
         Schema::table('users', function (Blueprint $table) {
             $table->renameColumn('email', 'mc_name');
             $table->renameColumn('email_verified_at', 'mc_name_verified_at');
@@ -28,13 +27,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Rollback changes in users table
         Schema::table('users', function (Blueprint $table) {
             $table->renameColumn('mc_name', 'email');
             $table->renameColumn('mc_name_verified_at', 'email_verified_at');
         });
 
-        // Rollback changes in password_reset_tokens table
         Schema::table('password_reset_tokens', function (Blueprint $table) {
             $table->renameColumn('mc_name', 'email');
         });
