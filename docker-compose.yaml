@@ -123,8 +123,6 @@ services:
     volumes:
       - ./${MINEFLAYER_FOLDER}:/opt/mineflayer
       - ./${MINEFLAYER_FOLDER}/nmp-cache:/root/.minecraft/nmp-cache
-    ports:
-      - 3000:3000
     environment:
       - MINECRAFT_HOST=${MINECRAFT_HOST}
       - MINECRAFT_PORT=${MINECRAFT_PORT}
