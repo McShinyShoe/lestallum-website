@@ -19,7 +19,7 @@ endif
 
 .PHONY: clean init init-laravel init-next purge all mysql nginx next npm-build composer-install
 		composer-migrate-fresh composer-seed composer-key-generate env
-		redis mailhog phpmyadmin
+		redis mailhog phpmyadmin mineflayer
 
 clean:
 	${DOCKER_COMPOSE} down
@@ -39,7 +39,7 @@ purge:
 	sudo rm $(NEXT_FOLDER) -rf
 
 all: clean mysql $(REDIS_TARGET) $(MAIL_TARGET) ${PHPMYADMIN_TARGET}\
-	 next nginx npm-build composer-install composer-migrate-fresh \
+	 next nginx mineflayer npm-build composer-install composer-migrate-fresh \
 	 composer-seed composer-key-generate
 
 mysql:
@@ -98,3 +98,6 @@ mailhog:
 
 phpmyadmin:
 	${DOCKER_COMPOSE} up -d --build phpmyadmin
+
+mineflayer:
+	${DOCKER_COMPOSE} up -d --build mineflayer
