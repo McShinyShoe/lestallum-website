@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Auth\AuthenticationException;
 
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\VerifiedMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'verified' => VerifiedMiddleware::class,
         ]);
     })
     ->withExceptions(function ($exceptions) {
