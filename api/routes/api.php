@@ -5,8 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TownController;
 
-use App\Models\User;
-
 Route::get('/hello', [TownController::class, 'hello']);
 
 Route::get('/user', function (Request $request) {
@@ -15,7 +13,11 @@ Route::get('/user', function (Request $request) {
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/verify', [AuthController::class, 'generateVerificationCode']);
+    Route::post('/verify', [AuthController::class, 'submitVerificationCode']);
+});
 
 // Town Routes
 Route::middleware('auth:sanctum')->group(function () {
