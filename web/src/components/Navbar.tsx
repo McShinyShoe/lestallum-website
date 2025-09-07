@@ -4,6 +4,24 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { DarkModeToggle } from "./DarkModeToggle";
 
+interface UserData {
+  id: number;
+  name: string;
+  mc_name: string;
+  mc_name_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  roles: string[];
+}
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data: UserData;
+  errors: any;
+  code: number;
+}
+
 function NavbarList() {
   return (
     <>
@@ -32,6 +50,35 @@ export default function Navbar() {
   const [isClient, setIsClient] = useState(false); // To detect if we're on the client side
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const profileRef = useRef<HTMLDivElement | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/user/current", {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
+
+        const data: ApiResponse = await res.json();
+        if (data.success) {
+          setUserData(data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchUser();
+  }, []);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -119,11 +166,11 @@ export default function Navbar() {
             onClick={toggleDropdown}
           >
             <img
-              src="https://www.gravatar.com/avatar/mcshinyshoe" // Replace with dynamic user avatar URL
+              src={`https://minotar.net/avatar/${userData?.mc_name}/100`}
               alt="User Avatar"
-              className="w-8 h-8 rounded-full"
+              className="w-8 h-8 rounded-sm"
             />
-            <span className="text-sm">Username</span>
+            <span className="text-sm">{userData ? userData.mc_name : "Invalid User"}</span>
           </div>
 
           {/* Dropdown Menu */}
