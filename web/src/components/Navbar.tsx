@@ -7,19 +7,19 @@ import { DarkModeToggle } from "./DarkModeToggle";
 function NavbarList() {
   return (
     <>
-      <Link href="/" className="block hover:text-gray-300">
+      <Link href="/" className="block hover:bg-secondary">
         Home
       </Link>
-      <Link href="/about" className="block hover:text-gray-300">
+      <Link href="/about" className="block hover:bg-secondary">
         About
       </Link>
-      <Link href="/map" className="block hover:text-gray-300">
+      <Link href="/map" className="block hover:bg-secondary">
         Map
       </Link>
-      <Link href="/rules" className="block hover:text-gray-300">
+      <Link href="/rules" className="block hover:bg-secondary">
         Rules
       </Link>
-      <Link href="/task" className="block hover:text-gray-300">
+      <Link href="/task" className="block hover:bg-secondary">
         Task
       </Link>
     </>
@@ -76,7 +76,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed w-full bg-background text-foreground shadow-md h-[56px]">
+    <nav className="fixed w-full bg-background text-foreground shadow-md h-[60px]">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold">
@@ -87,7 +87,7 @@ export default function Navbar() {
 <div className="flex lg:hidden">
   <button
     onClick={toggleMobileMenu}
-    className="relative w-8 h-8 flex items-center justify-center focus:outline-none text-gray-800 dark:text-white"
+    className="relative w-8 h-8 flex items-center justify-center focus:outline-none text-gray-800 dark:text-foreground"
     aria-label="Toggle Menu"
   >
     <span
@@ -129,24 +129,24 @@ export default function Navbar() {
           {/* Dropdown Menu */}
           <div
             ref={dropdownRef}
-            className={`absolute right-0 bg-gray-800 text-foreground rounded-lg shadow-lg w-48 py-2 z-10 transition-transform duration-200 ${
+            className={`absolute right-0 bg-card text-foreground rounded-lg shadow-lg w-48 py-2 z-10 transition-transform duration-200 ${
               isDropdownOpen ? "scale-100" : "scale-0"
             }`}
             style={{
               transformOrigin: "top right",
             }}
           >
-            <Link href="/profile" className="block px-4 py-2 hover:bg-gray-700">
+            <Link href="/profile" className="block px-4 py-2 hover:bg-secondary">
               Edit Profile
             </Link>
             <Link
               href="/settings"
-              className="block px-4 py-2 hover:bg-gray-700"
+              className="block px-4 py-2 hover:bg-secondary"
             >
               Settings
             </Link>
             <button
-              className="block w-full text-left px-4 py-2 hover:bg-gray-700"
+              className="block w-full text-left px-4 py-2 hover:bg-secondary"
               onClick={() => alert("Logged out")} // Add logout functionality here
             >
               Logout
@@ -157,7 +157,7 @@ export default function Navbar() {
 
       {/* Mobile Menu (Hamburger) */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-gray-800 text-white p-4 space-y-4">
+        <div className="lg:hidden bg-card text-foreground p-4 space-y-4">
           <NavbarList />
         </div>
       )}
