@@ -34,12 +34,14 @@ init-next:
 	mkdir -p $(NEXT_FOLDER)
 	${DOCKER_COMPOSE} run --rm --build npx create-next-app@${NEXT_VERSION} .
 
+start: mysql $(REDIS_TARGET) $(MAIL_TARGET) ${PHPMYADMIN_TARGET} \
+       next nginx
+
 purge:
 	sudo rm $(LARAVEL_FOLDER) -rf
 	sudo rm $(NEXT_FOLDER) -rf
 
-all: clean mysql $(REDIS_TARGET) $(MAIL_TARGET) ${PHPMYADMIN_TARGET}\
-	 next nginx mineflayer npm-build composer-install composer-migrate-fresh \
+all: clean start npm-build composer-install composer-migrate-fresh \
 	 composer-seed composer-key-generate
 
 mysql:
