@@ -97,3 +97,6 @@ lib-features = []
 #
 # Optional. Defaults to false.
 lib-default-features = false
+
+tailwind-input-file = "style/tailwind.css"
+tailwind-config-file = "tailwind.config.js"

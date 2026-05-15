@@ -1,3 +1,7 @@
+mod components;
+mod layouts;
+mod pages;
+
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
@@ -5,10 +9,12 @@ use leptos_router::{
     StaticSegment,
 };
 
+use crate::pages::home::HomePage;
+
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" data-theme="dark">
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -16,7 +22,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <HydrationScripts options/>
                 <MetaTags/>
             </head>
-            <body>
+            <body class="bg-base-100 text-base-content antialiased">
                 <App/>
             </body>
         </html>
@@ -25,16 +31,12 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 
 #[component]
 pub fn App() -> impl IntoView {
-    // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
 
     view! {
         <Stylesheet id="leptos" href="/pkg/lestallum-website.css"/>
+        <Title text="Lestallum Town"/>
 
-        // sets the document title
-        <Title text="Welcome to Leptos"/>
-
-        // content for this welcome page
         <Router>
             <main>
                 <Routes fallback=|| "Page not found.".into_view()>
@@ -42,18 +44,5 @@ pub fn App() -> impl IntoView {
                 </Routes>
             </main>
         </Router>
-    }
-}
-
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let count = RwSignal::new(0);
-    let on_click = move |_| *count.write() += 1;
-
-    view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
     }
 }
