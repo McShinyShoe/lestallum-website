@@ -56,11 +56,14 @@ version = "0.1.0"
 dependencies = [
  "cfg-if",
  "http",
+ "js-sys",
  "leptos",
  "leptos_axum",
  "leptos_meta",
  "leptos_router",
  "thiserror 2.0.18",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

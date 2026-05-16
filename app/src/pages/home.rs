@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::layouts::main::MainLayout;
+use crate::{components::animations::animate_in::AnimateIn, layouts::main::MainLayout};
 
 const DISCORD_URL: &str = "https://lestallum.shinyshoe.net/discord";
 
@@ -66,28 +66,30 @@ fn Hero() -> impl IntoView {
 fn About() -> impl IntoView {
     view! {
         <section class="bg-base-200 px-6 py-24 md:px-12">
-            <div class="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
-                <div>
-                    <span class="mb-4 inline-block rounded-full bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300">
-                        "Our Town"
-                    </span>
-                    <h2 class="mb-6 text-4xl font-bold leading-tight md:text-5xl">
-                        "A town for all style."
-                    </h2>
-                    <p class="mb-4 text-lg leading-relaxed text-base-content/70">
-                        "Unlike ordinary towns that bounds to a single style, Lestallum is divided into several
-                        unique town areas, each with its own identity and atmosphere. From the cobbled streets 
-                        and towering keeps of the Medieval quarter, to the glowing skylines of the Futuristic district, 
-                        every corner of the town tells a different story."
-                    </p>
+            <AnimateIn>
+                <div class="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
+                    <div>
+                        <span class="mb-4 inline-block rounded-full bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300">
+                            "Our Town"
+                        </span>
+                        <h2 class="mb-6 text-4xl font-bold leading-tight md:text-5xl">
+                            "A town for all style."
+                        </h2>
+                        <p class="mb-4 text-lg leading-relaxed text-base-content/70">
+                            "Unlike ordinary towns that bounds to a single style, Lestallum is divided into several
+                            unique town areas, each with its own identity and atmosphere. From the cobbled streets 
+                            and towering keeps of the Medieval quarter, to the glowing skylines of the Futuristic district, 
+                            every corner of the town tells a different story."
+                        </p>
+                    </div>
+                    <div class="group relative aspect-video">
+                        <div
+                            class="absolute inset-0 bg-contain bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
+                            style="background-image: url('/town.webp');"
+                        ></div>
+                    </div>
                 </div>
-                <div class="group relative aspect-video">
-                    <div
-                        class="absolute inset-0 bg-contain bg-center bg-no-repeat transition-transform duration-700 group-hover:scale-105"
-                        style="background-image: url('/town.webp');"
-                    ></div>
-                </div>
-            </div>
+            </AnimateIn>
         </section>
     }
 }
@@ -120,151 +122,153 @@ fn AreasCarousel() -> impl IntoView {
 
     view! {
         <section class="bg-base-300 px-6 py-24">
-            <div class="mx-auto max-w-6xl">
-                <div class="mb-10 text-center">
-                    <span class="mb-4 inline-block rounded-full bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300">
-                        "Explore"
-                    </span>
-                    <h2 class="mb-3 text-4xl font-bold md:text-5xl">"Areas of Lestallum"</h2>
-                    <p class="text-base-content/60">
-                        "Each district has its own flavor."
-                    </p>
-                </div>
+            <AnimateIn>
+                <div class="mx-auto max-w-6xl">
+                    <div class="mb-10 text-center">
+                        <span class="mb-4 inline-block rounded-full bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300">
+                            "Explore"
+                        </span>
+                        <h2 class="mb-3 text-4xl font-bold md:text-5xl">"Areas of Lestallum"</h2>
+                        <p class="text-base-content/60">
+                            "Each district has its own flavor."
+                        </p>
+                    </div>
 
-                <div class="relative h-[32rem]">
-                    <div class="absolute inset-0 overflow-hidden" style=mask_style>
-                        {(0..len).map(|i| {
-                            let card_style = move || {
-                                let cur = current.get();
-                                let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
-                                let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
+                    <div class="relative h-[32rem]">
+                        <div class="absolute inset-0 overflow-hidden" style=mask_style>
+                            {(0..len).map(|i| {
+                                let card_style = move || {
+                                    let cur = current.get();
+                                    let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
+                                    let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
 
-                                let left = match rel {
-                                    -1 => "0%",
-                                    0  => "50%",
-                                    1  => "100%",
-                                    r if r > 0 => "160%",
-                                    _  => "-60%",
+                                    let left = match rel {
+                                        -1 => "0%",
+                                        0  => "50%",
+                                        1  => "100%",
+                                        r if r > 0 => "160%",
+                                        _  => "-60%",
+                                    };
+                                    let (width, height) = if rel == 0 { ("32rem", "28rem") } else { ("20rem", "20rem") };
+                                    let z = if rel == 0 { 10 } else if rel.abs() == 1 { 5 } else { 1 };
+                                    let opacity = if rel.abs() <= 1 { "1" } else { "0" };
+                                    let pointer = if rel.abs() <= 1 { "auto" } else { "none" };
+                                    let shadow = if rel == 0 {
+                                        "0 25px 50px -12px rgba(0,0,0,.5),0 0 0 1px rgba(16,185,129,.2)"
+                                    } else {
+                                        "0 20px 25px -5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)"
+                                    };
+
+                                    format!(
+                                        "position:absolute;top:50%;left:{left};\
+                                        transform:translate(-50%,-50%);\
+                                        width:{width};height:{height};\
+                                        z-index:{z};opacity:{opacity};\
+                                        pointer-events:{pointer};\
+                                        box-shadow:{shadow};\
+                                        border-radius:1rem;overflow:hidden;\
+                                        transition:all 0.5s cubic-bezier(0.4,0,0.2,1);\
+                                        background-image:url('{}');\
+                                        background-size:cover;background-position:center;",
+                                        AREAS[i].2
+                                    )
                                 };
-                                let (width, height) = if rel == 0 { ("32rem", "28rem") } else { ("20rem", "20rem") };
-                                let z = if rel == 0 { 10 } else if rel.abs() == 1 { 5 } else { 1 };
-                                let opacity = if rel.abs() <= 1 { "1" } else { "0" };
-                                let pointer = if rel.abs() <= 1 { "auto" } else { "none" };
-                                let shadow = if rel == 0 {
-                                    "0 25px 50px -12px rgba(0,0,0,.5),0 0 0 1px rgba(16,185,129,.2)"
+
+                                let is_center = move || {
+                                    let cur = current.get();
+                                    let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
+                                    let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
+                                    rel == 0
+                                };
+
+                                let (name, style_label, _) = AREAS[i];
+
+                                let t = "transition:all 0.5s cubic-bezier(0.4,0,0.2,1)";
+
+                                let content_style = move || if is_center() {
+                                    format!("position:absolute;bottom:0;left:0;right:0;padding:1.75rem;{t}")
                                 } else {
-                                    "0 20px 25px -5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)"
+                                    format!("position:absolute;bottom:0;left:0;right:0;padding:1.25rem;{t}")
                                 };
 
-                                format!(
-                                    "position:absolute;top:50%;left:{left};\
-                                     transform:translate(-50%,-50%);\
-                                     width:{width};height:{height};\
-                                     z-index:{z};opacity:{opacity};\
-                                     pointer-events:{pointer};\
-                                     box-shadow:{shadow};\
-                                     border-radius:1rem;overflow:hidden;\
-                                     transition:all 0.5s cubic-bezier(0.4,0,0.2,1);\
-                                     background-image:url('{}');\
-                                     background-size:cover;background-position:center;",
-                                    AREAS[i].2
-                                )
-                            };
+                                let badge_style = move || if is_center() {
+                                    format!("display:inline-block;padding:0.375rem 1rem;margin-bottom:0.75rem;\
+                                            font-weight:700;background-color:rgba(16,185,129,0.3);\
+                                            color:rgb(167,243,208);{t}")
+                                } else {
+                                    format!("display:inline-block;padding:0.25rem 0.75rem;margin-bottom:0.5rem;\
+                                            font-weight:600;background-color:rgba(16,185,129,0.2);\
+                                            color:rgb(110,231,183);{t}")
+                                };
 
-                            let is_center = move || {
-                                let cur = current.get();
-                                let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
-                                let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
-                                rel == 0
-                            };
+                                let heading_style = move || if is_center() {
+                                    format!("font-size:1.875rem;font-weight:800;{t}")
+                                } else {
+                                    format!("font-size:1.25rem;font-weight:700;{t}")
+                                };
 
-                            let (name, style_label, _) = AREAS[i];
-
-                            let t = "transition:all 0.5s cubic-bezier(0.4,0,0.2,1)";
-
-                            let content_style = move || if is_center() {
-                                format!("position:absolute;bottom:0;left:0;right:0;padding:1.75rem;{t}")
-                            } else {
-                                format!("position:absolute;bottom:0;left:0;right:0;padding:1.25rem;{t}")
-                            };
-
-                            let badge_style = move || if is_center() {
-                                format!("display:inline-block;padding:0.375rem 1rem;margin-bottom:0.75rem;\
-                                         font-weight:700;background-color:rgba(16,185,129,0.3);\
-                                         color:rgb(167,243,208);{t}")
-                            } else {
-                                format!("display:inline-block;padding:0.25rem 0.75rem;margin-bottom:0.5rem;\
-                                         font-weight:600;background-color:rgba(16,185,129,0.2);\
-                                         color:rgb(110,231,183);{t}")
-                            };
-
-                            let heading_style = move || if is_center() {
-                                format!("font-size:1.875rem;font-weight:800;{t}")
-                            } else {
-                                format!("font-size:1.25rem;font-weight:700;{t}")
-                            };
-
-                            view! {
-                                <div style=card_style>
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                                    <div style=content_style>
-                                        <span
-                                            class="rounded-full text-xs uppercase tracking-widest backdrop-blur"
-                                            style=badge_style
-                                        >
-                                            {style_label}
-                                        </span>
-                                        <h3
-                                            class="text-white drop-shadow-lg"
-                                            style=heading_style
-                                        >
-                                            {name}
-                                        </h3>
+                                view! {
+                                    <div style=card_style>
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                        <div style=content_style>
+                                            <span
+                                                class="rounded-full text-xs uppercase tracking-widest backdrop-blur"
+                                                style=badge_style
+                                            >
+                                                {style_label}
+                                            </span>
+                                            <h3
+                                                class="text-white drop-shadow-lg"
+                                                style=heading_style
+                                            >
+                                                {name}
+                                            </h3>
+                                        </div>
                                     </div>
-                                </div>
+                                }
+                            }).collect_view()}
+                        </div>
+
+                        <button
+                            on:click=go_prev
+                            aria-label="Previous area"
+                            class="btn btn-circle btn-primary absolute left-2 top-1/2 z-20 -translate-y-1/2 shadow-xl sm:left-6"
+                        >
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <button
+                            on:click=go_next
+                            aria-label="Next area"
+                            class="btn btn-circle btn-primary absolute right-2 top-1/2 z-20 -translate-y-1/2 shadow-xl sm:right-6"
+                        >
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="mt-8 flex justify-center gap-2">
+                        {(0..len).map(|i| {
+                            let dot_class = move || {
+                                if current.get() == i {
+                                    "h-2 w-8 rounded-full bg-emerald-400 transition-all duration-300"
+                                } else {
+                                    "h-2 w-2 rounded-full bg-white/20 transition-all duration-300"
+                                }
+                            };
+                            view! {
+                                <button
+                                    on:click=move |_| current.set(i)
+                                    aria-label=format!("Go to area {}", i + 1)
+                                    class=dot_class
+                                ></button>
                             }
                         }).collect_view()}
                     </div>
-
-                    <button
-                        on:click=go_prev
-                        aria-label="Previous area"
-                        class="btn btn-circle btn-primary absolute left-2 top-1/2 z-20 -translate-y-1/2 shadow-xl sm:left-6"
-                    >
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                    </button>
-                    <button
-                        on:click=go_next
-                        aria-label="Next area"
-                        class="btn btn-circle btn-primary absolute right-2 top-1/2 z-20 -translate-y-1/2 shadow-xl sm:right-6"
-                    >
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </button>
                 </div>
-
-                <div class="mt-8 flex justify-center gap-2">
-                    {(0..len).map(|i| {
-                        let dot_class = move || {
-                            if current.get() == i {
-                                "h-2 w-8 rounded-full bg-emerald-400 transition-all duration-300"
-                            } else {
-                                "h-2 w-2 rounded-full bg-white/20 transition-all duration-300"
-                            }
-                        };
-                        view! {
-                            <button
-                                on:click=move |_| current.set(i)
-                                aria-label=format!("Go to area {}", i + 1)
-                                class=dot_class
-                            ></button>
-                        }
-                    }).collect_view()}
-                </div>
-            </div>
+            </AnimateIn>
         </section>
     }
 }
@@ -273,29 +277,31 @@ fn AreasCarousel() -> impl IntoView {
 fn Stats() -> impl IntoView {
     view! {
         <section class="bg-base-100 px-6 py-24">
-            <div class="mx-auto max-w-6xl text-center">
-                <h2 class="mb-4 text-4xl font-bold md:text-5xl">"By the Numbers"</h2>
-                <p class="mb-12 text-base-content/60">
-                    "Years of building, growing, and exploring together."
-                </p>
-                <div class="grid gap-6 md:grid-cols-3">
-                    <StatCard
-                        label="Residents"
-                        value="30"
-                        sublabel="peoples"
-                    />
-                    <StatCard
-                        label="Town Size"
-                        value="2,108"
-                        sublabel="chunks across"
-                    />
-                    <StatCard
-                        label="Founded"
-                        value="Oct 31"
-                        sublabel="2021"
-                    />
+            <AnimateIn>
+                <div class="mx-auto max-w-6xl text-center">
+                    <h2 class="mb-4 text-4xl font-bold md:text-5xl">"By the Numbers"</h2>
+                    <p class="mb-12 text-base-content/60">
+                        "Years of building, growing, and exploring together."
+                    </p>
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <StatCard
+                            label="Residents"
+                            value="30"
+                            sublabel="peoples"
+                        />
+                        <StatCard
+                            label="Town Size"
+                            value="2,108"
+                            sublabel="chunks across"
+                        />
+                        <StatCard
+                            label="Founded"
+                            value="Oct 31"
+                            sublabel="2021"
+                        />
+                    </div>
                 </div>
-            </div>
+            </AnimateIn>
         </section>
     }
 }
