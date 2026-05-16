@@ -108,25 +108,12 @@ const AREAS: &[(&str, &str, &str)] = &[
     ("Oasis", "Medieval", "/areas/oasis.webp"),
 ];
 
-fn area_bg(img: &str) -> String {
-    format!(
-        "background-image: url('{}');
-         background-size: cover;
-         background-position: center;",
-        img
-    )
-}
-
 #[component]
 fn AreasCarousel() -> impl IntoView {
     let len = AREAS.len();
     let current = RwSignal::new(0usize);
     let go_prev = move |_| current.update(|c| *c = (*c + len - 1) % len);
     let go_next = move |_| current.update(|c| *c = (*c + 1) % len);
-
-    let left = move || AREAS[(current.get() + len - 1) % len];
-    let center = move || AREAS[current.get()];
-    let right = move || AREAS[(current.get() + 1) % len];
 
     let mask_style = "mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%); \
                       -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);";
@@ -146,50 +133,97 @@ fn AreasCarousel() -> impl IntoView {
 
                 <div class="relative h-[32rem]">
                     <div class="absolute inset-0 overflow-hidden" style=mask_style>
-                        <div
-                            class="absolute left-0 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 transition-all duration-500"
-                            style=move || area_bg(left().2)
-                        >
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-5">
-                                <span class="mb-2 inline-block rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300 backdrop-blur">
-                                    {move || left().1}
-                                </span>
-                                <h3 class="text-xl font-bold text-white drop-shadow-lg">
-                                    {move || left().0}
-                                </h3>
-                            </div>
-                        </div>
+                        {(0..len).map(|i| {
+                            let card_style = move || {
+                                let cur = current.get();
+                                let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
+                                let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
 
-                        <div
-                            class="absolute left-1/2 top-1/2 h-[28rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-emerald-500/20 transition-all duration-500"
-                            style=move || area_bg(center().2)
-                        >
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-7">
-                                <span class="mb-3 inline-block rounded-full bg-emerald-500/30 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-emerald-200 backdrop-blur">
-                                    {move || center().1}
-                                </span>
-                                <h3 class="text-3xl font-extrabold text-white drop-shadow-2xl md:text-4xl">
-                                    {move || center().0}
-                                </h3>
-                            </div>
-                        </div>
+                                let left = match rel {
+                                    -1 => "0%",
+                                    0  => "50%",
+                                    1  => "100%",
+                                    r if r > 0 => "160%",
+                                    _  => "-60%",
+                                };
+                                let (width, height) = if rel == 0 { ("32rem", "28rem") } else { ("20rem", "20rem") };
+                                let z = if rel == 0 { 10 } else if rel.abs() == 1 { 5 } else { 1 };
+                                let opacity = if rel.abs() <= 1 { "1" } else { "0" };
+                                let pointer = if rel.abs() <= 1 { "auto" } else { "none" };
+                                let shadow = if rel == 0 {
+                                    "0 25px 50px -12px rgba(0,0,0,.5),0 0 0 1px rgba(16,185,129,.2)"
+                                } else {
+                                    "0 20px 25px -5px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.1)"
+                                };
 
-                        <div
-                            class="absolute right-0 top-1/2 h-80 w-80 -translate-y-1/2 translate-x-1/2 overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10 transition-all duration-500"
-                            style=move || area_bg(right().2)
-                        >
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-5">
-                                <span class="mb-2 inline-block rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-300 backdrop-blur">
-                                    {move || right().1}
-                                </span>
-                                <h3 class="text-xl font-bold text-white drop-shadow-lg">
-                                    {move || right().0}
-                                </h3>
-                            </div>
-                        </div>
+                                format!(
+                                    "position:absolute;top:50%;left:{left};\
+                                     transform:translate(-50%,-50%);\
+                                     width:{width};height:{height};\
+                                     z-index:{z};opacity:{opacity};\
+                                     pointer-events:{pointer};\
+                                     box-shadow:{shadow};\
+                                     border-radius:1rem;overflow:hidden;\
+                                     transition:all 0.5s cubic-bezier(0.4,0,0.2,1);\
+                                     background-image:url('{}');\
+                                     background-size:cover;background-position:center;",
+                                    AREAS[i].2
+                                )
+                            };
+
+                            let is_center = move || {
+                                let cur = current.get();
+                                let raw = (i as i32 - cur as i32).rem_euclid(len as i32);
+                                let rel = if raw > (len as i32) / 2 { raw - len as i32 } else { raw };
+                                rel == 0
+                            };
+
+                            let (name, style_label, _) = AREAS[i];
+
+                            let t = "transition:all 0.5s cubic-bezier(0.4,0,0.2,1)";
+
+                            let content_style = move || if is_center() {
+                                format!("position:absolute;bottom:0;left:0;right:0;padding:1.75rem;{t}")
+                            } else {
+                                format!("position:absolute;bottom:0;left:0;right:0;padding:1.25rem;{t}")
+                            };
+
+                            let badge_style = move || if is_center() {
+                                format!("display:inline-block;padding:0.375rem 1rem;margin-bottom:0.75rem;\
+                                         font-weight:700;background-color:rgba(16,185,129,0.3);\
+                                         color:rgb(167,243,208);{t}")
+                            } else {
+                                format!("display:inline-block;padding:0.25rem 0.75rem;margin-bottom:0.5rem;\
+                                         font-weight:600;background-color:rgba(16,185,129,0.2);\
+                                         color:rgb(110,231,183);{t}")
+                            };
+
+                            let heading_style = move || if is_center() {
+                                format!("font-size:1.875rem;font-weight:800;{t}")
+                            } else {
+                                format!("font-size:1.25rem;font-weight:700;{t}")
+                            };
+
+                            view! {
+                                <div style=card_style>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                    <div style=content_style>
+                                        <span
+                                            class="rounded-full text-xs uppercase tracking-widest backdrop-blur"
+                                            style=badge_style
+                                        >
+                                            {style_label}
+                                        </span>
+                                        <h3
+                                            class="text-white drop-shadow-lg"
+                                            style=heading_style
+                                        >
+                                            {name}
+                                        </h3>
+                                    </div>
+                                </div>
+                            }
+                        }).collect_view()}
                     </div>
 
                     <button
