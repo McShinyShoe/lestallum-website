@@ -1,6 +1,7 @@
 #![recursion_limit = "512"]
 
 mod components;
+pub mod data;
 mod layouts;
 mod pages;
 
@@ -8,9 +9,11 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
     components::{Route, Router, Routes},
-    StaticSegment,
+    ParamSegment, StaticSegment,
 };
 
+use crate::pages::area_detail::AreaDetailPage;
+use crate::pages::areas::AreasPage;
 use crate::pages::home::HomePage;
 use crate::pages::not_found::NotFoundPage;
 
@@ -45,6 +48,8 @@ pub fn App() -> impl IntoView {
             <main>
                 <Routes fallback=|| view! { <NotFoundPage/> }>
                     <Route path=StaticSegment("") view=HomePage/>
+                    <Route path=StaticSegment("areas") view=AreasPage/>
+                    <Route path=(StaticSegment("areas"), ParamSegment("area")) view=AreaDetailPage/>
                 </Routes>
             </main>
         </Router>

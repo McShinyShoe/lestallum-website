@@ -1,8 +1,10 @@
 use leptos::prelude::*;
 
-use crate::{components::animations::animate_in::AnimateIn, layouts::main::MainLayout};
-
-const DISCORD_URL: &str = "https://lestallum.shinyshoe.net/discord";
+use crate::{
+    components::animations::animate_in::AnimateIn,
+    data::{AREAS, DISCORD_URL},
+    layouts::main::MainLayout,
+};
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -94,22 +96,6 @@ fn About() -> impl IntoView {
     }
 }
 
-const AREAS: &[(&str, &str, &str)] = &[
-    ("Arboria", "Semi-Modern", "/areas/arboria.webp"),
-    (
-        "Evergreen Garden",
-        "Medieval",
-        "/areas/evergreen_garden.webp",
-    ),
-    ("TsunamiCity", "Semi-Futuristic", "/areas/tsunami_city.webp"),
-    ("Tropicana", "Random", "/areas/tropicana.webp"),
-    ("Leville", "Random", "/areas/leville.webp"),
-    ("Clintwood", "Random", "/areas/clintwood.webp"),
-    ("OFC", "Dark Fantasy", "/areas/ofc.webp"),
-    ("Hive", "Medieval", "/areas/hive.webp"),
-    ("Oasis", "Medieval", "/areas/oasis.webp"),
-];
-
 #[component]
 fn AreasCarousel() -> impl IntoView {
     let len = AREAS.len();
@@ -170,7 +156,7 @@ fn AreasCarousel() -> impl IntoView {
                                         transition:all 0.5s cubic-bezier(0.4,0,0.2,1);\
                                         background-image:url('{}');\
                                         background-size:cover;background-position:center;",
-                                        AREAS[i].2
+                                        AREAS[i].image
                                     )
                                 };
 
@@ -181,7 +167,8 @@ fn AreasCarousel() -> impl IntoView {
                                     rel == 0
                                 };
 
-                                let (name, style_label, _) = AREAS[i];
+                                let name = AREAS[i].name;
+                                let style_label = AREAS[i].theme;
 
                                 let t = "transition:all 0.5s cubic-bezier(0.4,0,0.2,1)";
 

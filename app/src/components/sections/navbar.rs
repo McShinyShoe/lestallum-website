@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-const DISCORD_URL: &str = "https://lestallum.shinyshoe.net/discord";
+use crate::data::DISCORD_URL;
 
 #[derive(Clone, Copy)]
 pub struct ProfileMenuOpen(pub RwSignal<bool>);

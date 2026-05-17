@@ -18,7 +18,7 @@ thiserror.workspace = true
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen.workspace = true
 js-sys = "0.3"
-web-sys = { version = "0.3", features = ["IntersectionObserver", "IntersectionObserverEntry", "Element"] }
+web-sys = { version = "0.3", features = ["IntersectionObserver", "IntersectionObserverEntry", "Element", "MouseEvent"] }
 
 [features]
 default = []
