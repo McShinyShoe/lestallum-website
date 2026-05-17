@@ -5,25 +5,51 @@ const DISCORD_URL: &str = "https://lestallum.shinyshoe.net/discord";
 #[derive(Clone, Copy)]
 pub struct ProfileMenuOpen(pub RwSignal<bool>);
 
+#[derive(Clone, Copy)]
+pub struct MobileMenuOpen(pub RwSignal<bool>);
+
+#[derive(Clone, Copy)]
+pub struct InfoOpen(pub RwSignal<bool>);
+
 #[component]
 pub fn Navbar() -> impl IntoView {
-    let ProfileMenuOpen(open) =
+    let ProfileMenuOpen(profile_open) =
         use_context::<ProfileMenuOpen>().expect("ProfileMenuOpen context must be provided");
+    let MobileMenuOpen(mobile_open) =
+        use_context::<MobileMenuOpen>().expect("MobileMenuOpen context must be provided");
+    let InfoOpen(info_open) = use_context::<InfoOpen>().expect("InfoOpen context must be provided");
 
     view! {
         <nav class="fixed inset-x-4 top-4 z-50">
 
-            <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-base-200/80 px-6 py-3 shadow-2xl backdrop-blur-md">
+            <div class="absolute inset-0 rounded-2xl border border-white/10 bg-base-200/80 shadow-2xl backdrop-blur-md pointer-events-none" />
 
-                <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight">
-                    <img src="/favicon-32x32.png" alt="✦" class="w-5 h-5" />
-                    "Lestallum"
-                </a>
+            <div class="relative flex items-center justify-between px-6 py-3">
 
-                <ul class="flex items-center gap-1 text-sm font-medium">
+                // left
+                <div class="flex items-center gap-2">
+                    <button
+                        class="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg text-base-content/60 transition hover:bg-white/10 hover:text-base-content"
+                        on:click=move |_| mobile_open.update(|v| *v = !*v)
+                        aria-label="Open menu"
+                    >
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+
+                    <a href="/" class="flex items-center gap-2 text-lg font-bold tracking-tight">
+                        <img src="/favicon-32x32.png" alt="✦" class="w-5 h-5" />
+                        "Lestallum"
+                    </a>
+                </div>
+
+                // center
+                <ul class="hidden lg:flex items-center gap-1 text-sm font-medium">
                     <NavLink href="/">"Home"</NavLink>
                     <NavLink href="/areas">"Areas"</NavLink>
                     <NavLink href="/map">"Map"</NavLink>
+                    <InfoDropdown info_open/>
                     <li>
                         <a
                             href=DISCORD_URL
@@ -36,8 +62,9 @@ pub fn Navbar() -> impl IntoView {
                     </li>
                 </ul>
 
+                // right
                 <button
-                    on:click=move |_| open.update(|v| *v = !*v)
+                    on:click=move |_| profile_open.update(|v| *v = !*v)
                     class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-base-300 text-base-content/60 transition hover:border-emerald-500/40 hover:text-emerald-400"
                     aria-label="Profile options"
                 >
@@ -53,7 +80,39 @@ pub fn Navbar() -> impl IntoView {
 
             </div>
 
-            <Show when=move || open.get()>
+            // mobile
+            <Show when=move || mobile_open.get()>
+                <div
+                    on:click=|ev| ev.stop_propagation()
+                    class="absolute left-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-base-200/80 shadow-2xl backdrop-blur-md"
+                >
+                    <ul class="p-2 text-sm font-medium">
+                        <MobileNavLink href="/">"Home"</MobileNavLink>
+                        <MobileNavLink href="/areas">"Areas"</MobileNavLink>
+                        <MobileNavLink href="/map">"Map"</MobileNavLink>
+                        <li class="px-1 pb-1 pt-3 text-xs font-semibold uppercase tracking-widest text-base-content/40">
+                            "Info"
+                        </li>
+                        <MobileNavLink href="/rules">"Rules"</MobileNavLink>
+                        <MobileNavLink href="/lore">"Lore"</MobileNavLink>
+                        <MobileNavLink href="/gallery">"Gallery"</MobileNavLink>
+                        <li class="my-1 border-t border-white/5"/>
+                        <li>
+                            <a
+                                href=DISCORD_URL
+                                target="_blank"
+                                rel="noopener"
+                                class="flex w-full rounded-lg px-3 py-2 text-base-content/70 transition hover:bg-white/10 hover:text-base-content"
+                            >
+                                "Discord"
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </Show>
+
+            // the profile dropdown
+            <Show when=move || profile_open.get()>
                 <div
                     on:click=|ev| ev.stop_propagation()
                     on:contextmenu=|ev| ev.prevent_default()
@@ -64,11 +123,62 @@ pub fn Navbar() -> impl IntoView {
                             "Login"
                         </ProfileMenuItem>
                     </ProfileMenuSection>
-
                 </div>
             </Show>
 
         </nav>
+    }
+}
+
+#[component]
+fn InfoDropdown(info_open: RwSignal<bool>) -> impl IntoView {
+    view! {
+        <li>
+            <button
+                on:click=move |ev| {
+                    ev.stop_propagation();
+                    info_open.update(|v| *v = !*v);
+                }
+                class="flex items-center gap-1 rounded-lg px-3 py-2 text-base-content/70 transition hover:bg-white/10 hover:text-base-content cursor-pointer select-none"
+            >
+                "Info"
+                <svg
+                    class=move || format!(
+                        "h-3 w-3 transition-transform duration-200{}",
+                        if info_open.get() { "" } else { " -rotate-90" }
+                    )
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <Show when=move || info_open.get()>
+                <ul
+                    on:click=|ev| ev.stop_propagation()
+                    class="absolute top-full mt-2 w-40 rounded-xl border border-white/10 bg-base-200/80 shadow-2xl backdrop-blur-md"
+                >
+                    <InfoLink href="/rules">"Rules"</InfoLink>
+                    <InfoLink href="/lore">"Lore"</InfoLink>
+                    <InfoLink href="/gallery">"Gallery"</InfoLink>
+                </ul>
+            </Show>
+        </li>
+    }
+}
+
+#[component]
+fn InfoLink(href: &'static str, children: Children) -> impl IntoView {
+    view! {
+        <li>
+            <a
+                href=href
+                class="flex px-3 py-2 text-sm text-base-content/70 transition hover:bg-white/10 hover:text-base-content"
+            >
+                {children()}
+            </a>
+        </li>
     }
 }
 
@@ -79,6 +189,20 @@ fn NavLink(href: &'static str, children: Children) -> impl IntoView {
             <a
                 href=href
                 class="rounded-lg px-3 py-2 text-base-content/70 transition hover:bg-white/10 hover:text-base-content"
+            >
+                {children()}
+            </a>
+        </li>
+    }
+}
+
+#[component]
+fn MobileNavLink(href: &'static str, children: Children) -> impl IntoView {
+    view! {
+        <li>
+            <a
+                href=href
+                class="flex w-full rounded-lg px-3 py-2 text-base-content/70 transition hover:bg-white/10 hover:text-base-content"
             >
                 {children()}
             </a>
