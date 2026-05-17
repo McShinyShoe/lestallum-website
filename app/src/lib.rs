@@ -16,6 +16,7 @@ use crate::pages::area_detail::AreaDetailPage;
 use crate::pages::areas::AreasPage;
 use crate::pages::home::HomePage;
 use crate::pages::not_found::NotFoundPage;
+use crate::pages::rules::RulesPage;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -50,6 +51,7 @@ pub fn App() -> impl IntoView {
                     <Route path=StaticSegment("") view=HomePage/>
                     <Route path=StaticSegment("areas") view=AreasPage/>
                     <Route path=(StaticSegment("areas"), ParamSegment("area")) view=AreaDetailPage/>
+                    <Route path=StaticSegment("rules") view=RulesPage/>
                 </Routes>
             </main>
         </Router>
